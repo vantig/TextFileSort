@@ -13,9 +13,15 @@ void readInFile(std::vector<std::string>vector, std::string filename)
 void readFile(std::vector<std::string>&vector, std::string filename)
 {
 	std::ifstream in(filename);
-	std::istream_iterator<std::string>iter(in), current;
+	std::string str;
+	std::stringstream ss(str);
+	while (std::getline(in,str))
+	{
+		vector.push_back(str);
+	}
+	/*std::istream_iterator<std::stringstream>iter(in), current;
 
-	std::copy(iter, current, std::back_inserter(vector));
+	std::copy(iter, current, std::back_inserter(vector));*/
 }
 //std::string removeSubstrs(std::string &s,	const std::string& w)
 //{
@@ -58,28 +64,43 @@ std::string removeWord(std::string& string,  std::string& word)
 	}
 	return str;
 }
-void removeWordFromVector(std::vector<std::string>vector, std::string& word)
+void removeWordFromVector(std::vector<std::string>&vector, std::string& word)
 {
+	for (size_t i = 0; i < vector.size(); ++i)
+	{
+		vector[i] = removeWord(vector[i], word);
+	}
+//	for(auto cur=vector.begin();  cur< vector.end(); cur++)
+//	{
+//		vector.insert(cur, removeWord(*cur, word));
+//	}
+}
+void SortVector(std::vector<std::string>& vector)
+{
+	std::sort(vector.begin(), vector.end(), [](auto l, auto r)
+		{
 
+
+			return std::lexicographical_compare(std::begin(l), std::end(l), std::begin(r), std::end(r),
+				[](char cl, char cr) { return tolower(cl) < tolower(cr); });
+
+
+		});
 }
 int main()
 {
 	std::vector<std::string>vector;
 	readFile(vector, "Text.txt");
+	std::cout << "Enter  word for remove " << std::endl;
+	std::string word;
+	std::cin >> word;
+	removeWordFromVector(vector, word);
 
 	
-	std::copy(vector.begin(), vector.end(), std::ostream_iterator<std::string>(std::cout, " "));
+	std::copy(vector.begin(), vector.end(), std::ostream_iterator<std::string>(std::cout, "\n"));
 	std::cout <<std::endl <<"sort----------------"<< std::endl;
-	std::sort(vector.begin(), vector.end(), [](auto l, auto r)
-	{
-
-
-			return std::lexicographical_compare(std::begin(l), std::end(l),std:: begin(r),std:: end(r),
-				[](char cl, char cr) { return tolower(cl) < tolower(cr); });
-
-
-	});
-	std::copy(vector.begin(), vector.end(), std::ostream_iterator<std::string>(std::cout, " "));
+	SortVector(vector);
+	std::copy(vector.begin(), vector.end(), std::ostream_iterator<std::string>(std::cout, "\n"));
 	readInFile(vector, "Output.txt");
 
 
